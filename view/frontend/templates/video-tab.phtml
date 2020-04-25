@@ -1,0 +1,82 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/**
+ * Product media data template
+ *
+ * @var $block \Magento\ProductVideo\Block\Product\View\Gallery
+ */
+
+$iframeAttr = $block->getIframeAttributes();
+
+?>
+<?php   $images = $block->getGalleryImages()->getItems(); ?>
+<?php   foreach ($images as $image) : ?>
+<?php       if($image->getMediaType()=='external-video' ) : ?> 
+<?php       $parsedUrl = parse_url($image->getVideoUrl()); ?>
+<?php       if( isset($iframeAttr[$parsedUrl['host']]['src']) ) : ?>
+<?php
+                if( isset($parsedUrl['path']) || isset($parsedUrl['query']) ) {
+                    $slice =$iframeAttr[$parsedUrl['host']]['slice'];
+                    $videoId = explode($iframeAttr[$parsedUrl['host']]['separator'],$parsedUrl[$slice]);
+                }
+?>
+                <?php if($image->getData('medium_image_url')) : ?>
+                        <div class="video-container fotorama"  style="background-image: url(<?php echo $image->getData('medium_image_url') ?>); background-size: cover; background-position: center center;" data-background-image="url(<?php echo $image->getData('medium_image_url') ?>)">
+                            <div class="play-video"></div>
+                            <div class="inner" style="display: none;">
+                    <?php else : ?>
+                        <div class="video-container fotorama">
+                            <div class="play-video"></div>
+                            <div class="inner">
+                    <?php endif ?>
+                    <?php if(isset($videoId[1])) : ?>
+                                <iframe data-src="<?php echo sprintf($iframeAttr[$parsedUrl['host']]['src'],$videoId[1]); ?>" width="960" height="540" frameborder="0" title="<?php echo $image->getLabel() ?: $this->getProduct()->getName(); ?>" <?php echo $iframeAttr[$parsedUrl['host']]['attribute'] ?>></iframe>
+                    <?php else : ?>
+                                <p><?= __('Error: Video Id not found') ?></p>
+                    <?php endif ?>
+                            </div>
+                        </div>
+            <?php endif ?>
+        <?php endif ?>
+<?php   endforeach; ?>
+<script> 
+    require([
+    'jquery'
+], function ($) {
+
+    var stopAllPlayers = function() {
+        $('.video-container').each(function(){
+            $(this).css('background-image',$(this).data('background-image'));
+            $(this).find('iframe').attr('src','');
+            $(this).find('.inner').hide();
+            $(this).find('.play-video').show();
+        });
+    }
+
+    var playVideo = function(el) {
+        el.css('background-image','');
+        el.find('.inner').show();
+        el.find('.play-video').hide();
+        el.find('iframe').attr('src',el.find('iframe').data('src'));
+    }
+    
+    $(document).ready(function () {
+        
+        $('.video-container').on('click',function(){
+            stopAllPlayers();
+            playVideo($(this));
+        });
+
+        $("#tab-label-video-tab").on("dimensionsChanged", function (event, data) {
+            var opened = data.opened;
+            if (!opened) {
+                stopAllPlayers();
+            }
+        });
+      
+    });
+}); </script>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Boeki_ProductVideoTab::custom.css"/>
+    </head>
+    <body>
+        <!-- <referenceBlock name="product.info.media.video" remove="true" /> -->
+        <referenceBlock name="product.info.details">
+            <block class="Magento\Catalog\Block\Product\View\Gallery" template="Boeki_ProductVideoTab::video-tab.phtml" name="videostab" group="detailed_info">
+                <arguments>
+                     <argument name="block_id" xsi:type="string">video-tab</argument>
+                     <argument name="sort_order" xsi:type="string">23</argument>
+                     <argument name="title" translate="true" xsi:type="string">Videos</argument>
+                </arguments>
+            </block>  
+        </referenceBlock>
+    </body>
+</page>
